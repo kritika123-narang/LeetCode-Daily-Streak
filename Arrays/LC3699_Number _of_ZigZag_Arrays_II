@@ -1,0 +1,50 @@
+class Solution {
+    public int zigZagArrays(int n, int l, int r) {
+        int MOD = 1_000_000_007;
+
+        int m = r - l + 1;
+
+        // up[j] = number of arrays ending at value j whose next move should be down
+        // down[j] = number of arrays ending at value j whose next move should be up
+        long[] up = new long[m];
+        long[] down = new long[m];
+
+        // Base case: arrays of length 2
+        for (int j = 0; j < m; j++) {
+            up[j] = m - 1 - j; // choose a larger previous element
+            down[j] = j;       // choose a smaller previous element
+        }
+
+        // Build lengths 3...n
+        for (int len = 3; len <= n; len++) {
+
+            long[] newUp = new long[m];
+            long[] newDown = new long[m];
+
+            // Compute newDown using prefix sums of up
+            long prefix = 0;
+            for (int j = 0; j < m; j++) {
+                newDown[j] = prefix;
+                prefix = (prefix + up[j]) % MOD;
+            }
+
+            // Compute newUp using suffix sums of down
+            long suffix = 0;
+            for (int j = m - 1; j >= 0; j--) {
+                newUp[j] = suffix;
+                suffix = (suffix + down[j]) % MOD;
+            }
+
+            up = newUp;
+            down = newDown;
+        }
+
+        long ans = 0;
+
+        for (int j = 0; j < m; j++) {
+            ans = (ans + up[j] + down[j]) % MOD;
+        }
+
+        return (int) ans;
+    }
+}
